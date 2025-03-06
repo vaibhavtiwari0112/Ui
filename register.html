@@ -1,0 +1,159 @@
+<!-- Updated Register Page with Unique Leaf Borders & Hi Icon in Modal -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script defer src="js/auth.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.6/lottie.min.js"></script>
+</head>
+<body class="bg-yellow-500 flex justify-center items-center h-screen relative">
+    <div class="flex bg-white p-8 rounded shadow-md w-3/4 max-w-4xl relative">
+        <div class="w-1/2 flex justify-center items-center">
+            <div id="lottie-animation" class="w-48"></div>
+        </div>
+        <div class="w-1/2">
+            <h2 class="text-2xl font-bold text-center text-green-700">Register</h2>
+            <form id="registerForm">
+                <label class="block mt-4">Customer Name</label>
+                <input type="text" id="name" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p id="nameError" class="text-red-500 text-sm"></p>
+
+                <label class="block mt-4">Email</label>
+                <input type="email" id="email" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p id="emailError" class="text-red-500 text-sm"></p>
+
+                <label class="block mt-4">Password</label>
+                <div class="relative">
+                    <input type="password" id="password" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <button type="button" id="togglePassword" class="absolute right-2 top-2 text-gray-600">&#128065;</button>
+                </div>
+                <p id="passwordError" class="text-red-500 text-sm"></p>
+
+                <label class="block mt-4">Address</label>
+                <textarea id="address" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400"></textarea>
+                <p id="addressError" class="text-red-500 text-sm"></p>
+
+                <label class="block mt-4">Contact Number</label>
+                <input type="text" id="contact" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p id="contactError" class="text-red-500 text-sm"></p>
+
+                <button type="submit" class="mt-4 bg-green-600 text-white w-full py-2 rounded hover:bg-green-700">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Registration Success Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 transition-opacity">
+        <div class="bg-green-100 p-6 rounded-lg shadow-xl w-96 text-center border-4 border-green-600">
+            <div class="flex justify-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/2720/2720641.png" alt="Hi Icon" class="w-16 h-16">
+            </div>
+            <h3 class="text-2xl font-semibold mt-2 text-green-700">Welcome to Grocery Store!</h3>
+            <p class="text-green-600 text-lg">Registration Successful, <span id="userNameDisplay" class="font-bold"></span>!</p>
+            <button id="continueButton" class="mt-4 bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600">Continue</button>
+        </div>
+    </div>
+</body>
+</html>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const registerForm = document.getElementById("registerForm");
+            const registerModal = document.getElementById("registerModal");
+            const userNameDisplay = document.getElementById("userNameDisplay");
+            const continueButton = document.getElementById("continueButton");
+            const passwordInput = document.getElementById("password");
+            const togglePassword = document.getElementById("togglePassword");
+
+            // Lottie Animation Setup
+            lottie.loadAnimation({
+                container: document.getElementById('lottie-animation'),
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: 'https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json'
+            });
+
+            togglePassword.addEventListener("click", () => {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    togglePassword.innerHTML = "&#128064;"; // Open eye
+                } else {
+                    passwordInput.type = "password";
+                    togglePassword.innerHTML = "&#128065;"; // Crossed eye
+                }
+            });
+
+            function showError(inputId, message) {
+                document.getElementById(inputId + "Error").textContent = message;
+            }
+
+            function clearError(inputId) {
+                document.getElementById(inputId + "Error").textContent = "";
+            }
+
+            function validateField(inputId, validationFn, message) {
+                const value = document.getElementById(inputId).value.trim();
+                if (!validationFn(value)) {
+                    showError(inputId, message);
+                    return false;
+                } else {
+                    clearError(inputId);
+                    return true;
+                }
+            }
+
+            function validateForm() {
+                let isValid = true;
+
+                isValid &= validateField("name", (val) => val.length >= 3, "Name must be at least 3 characters.");
+                isValid &= validateField("email", (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), "Invalid email format.");
+                isValid &= validateField("password", (val) => val.length >= 6, "Password must be at least 6 characters.");
+                isValid &= validateField("address", (val) => val.length > 0, "Address cannot be empty.");
+                isValid &= validateField("contact", (val) => /^\d{10}$/.test(val), "Contact number must be 10 digits.");
+
+                return isValid;
+            }
+
+            document.getElementById("name").addEventListener("input", () => validateField("name", (val) => val.length >= 3, "Name must be at least 3 characters."));
+            document.getElementById("email").addEventListener("input", () => validateField("email", (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), "Invalid email format."));
+            document.getElementById("password").addEventListener("input", () => validateField("password", (val) => val.length >= 6, "Password must be at least 6 characters."));
+            document.getElementById("address").addEventListener("input", () => validateField("address", (val) => val.length > 0, "Address cannot be empty."));
+            document.getElementById("contact").addEventListener("input", () => validateField("contact", (val) => /^\d{10}$/.test(val), "Contact number must be 10 digits."));
+
+            registerForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                if (!validateForm()) return;
+
+                const users = JSON.parse(localStorage.getItem("users")) || [];
+                const email = document.getElementById("email").value.trim();
+                if (users.some(user => user.email === email)) {
+                    showError("email", "Email already exists.");
+                    return;
+                }
+
+                const newUser = {
+                    name: document.getElementById("name").value.trim(),
+                    email,
+                    password: passwordInput.value.trim(),
+                    address: document.getElementById("address").value.trim(),
+                    contact: document.getElementById("contact").value.trim()
+                };
+
+                users.push(newUser);
+                localStorage.setItem("users", JSON.stringify(users));
+
+                userNameDisplay.textContent = newUser.name;
+                registerModal.classList.remove("hidden");
+
+                setTimeout(() => window.location.href = "home.html", 5000);
+            });
+
+            continueButton.addEventListener("click", () => window.location.href = "home.html");
+        });
+    </script>
+</body>
+</html>

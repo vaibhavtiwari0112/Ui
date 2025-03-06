@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script defer src="js/cart.js"></script>
+</head>
+
+<body class="bg-green-900 text-yellow-300 flex flex-col min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-green-800 text-yellow-300 p-4 flex justify-between items-center shadow-lg fixed w-full top-0 z-50">
+        <h1 class="text-2xl font-bold">Your Cart</h1>
+        <a href="home.html" class="hover:text-yellow-500">Back to Home</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-20">
+        <h2 class="text-3xl font-bold text-yellow-300 mb-6">Your Cart Items</h2>
+        <div id="cart-items" class="grid grid-cols-3 gap-6"></div>
+    </main>
+
+    <footer class="bg-green-800 text-yellow-300 p-4 text-center fixed bottom-0 w-full">
+        &copy; 2025 Online Grocery Store. All Rights Reserved.
+    </footer>
+
+    <script>
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        document.getElementById("cart-items").innerHTML = cartItems.map(item =>
+            `<div class="bg-green-700 p-4 rounded-lg text-center">
+                <h3 class="text-xl">${item.name}</h3>
+                <p>₹${item.price}</p>
+                <button class="bg-red-500 px-4 py-2 mt-2 rounded-lg" onclick="removeFromCart(${item.id})">Remove</button>
+            </div>`
+        ).join("");
+
+        function removeFromCart(id) {
+            const newCart = cartItems.filter(item => item.id !== id);
+            localStorage.setItem("cart", JSON.stringify(newCart));
+            location.reload();
+        }
+    </script>
+
+</body>
+</html>
