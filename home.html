@@ -9,6 +9,7 @@
     <script defer src="js/home.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
     <style>
         /* Auto-scroll styling */
         #products {
@@ -48,10 +49,13 @@
             background-color: yellow !important;
             color: green !important;
         }
+        .main{
+            background-color: seashell;
+        }
     </style>
 </head>
 
-<body class="bg-white text-green-900 flex flex-col min-h-screen">
+<body class="main text-green-900 flex flex-col min-h-screen">
 
     <!-- Header -->
     <header class="bg-green-900 text-yellow-300 p-4 flex justify-between items-center shadow-lg fixed w-full top-0 z-50">
@@ -71,8 +75,9 @@
     <!-- Main Content -->
     <main class="container mx-auto mt-20 flex">
         <!-- Lottie Animation -->
-        <div class="w-1/2 flex items-center justify-center">
-            <div id="grocery-animation" class="w-80 h-80"></div>
+        <div class="w-1/5 flex flex-col justify-between items-center">
+            <dotlottie-player src="https://lottie.host/b5cabf8f-402a-448f-af6a-02f9f5c60cc6/d31UYp960P.lottie" background="seashell" speed="1" style="width: 300px; height: 500px" class="rounded-full" loop autoplay></dotlottie-player>
+            <dotlottie-player src="https://lottie.host/a3bd88da-ba80-4568-94ae-c4e2fe831881/nikblegAtN.lottie" background="seashell" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
         </div>
 
         <!-- Product Section -->
