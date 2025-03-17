@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script defer src="js/home.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    <style>
+        .main {
+            background-color: seashell;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2d3748;
+            color: #f7fafc;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 4rem;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 1rem;
+            border-bottom: 1px solid #4a5568;
+            cursor: pointer;
+        }
+
+        .sidebar a:hover {
+            background-color: #4a5568;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 1.5rem;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 2px solid #38a169;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="main text-green-900 flex flex-col min-h-screen">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2 class="text-center text-2xl font-bold text-yellow-400 mb-4">Admin Panel</h2>
+        <a onclick="setOperation('add')">Add Product</a>
+        <a onclick="setOperation('update')">Update Product</a>
+        <a onclick="setOperation('remove')">Remove Product</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+
+        <!-- Header -->
+        <header class="bg-green-900 text-yellow-300 p-4 flex justify-between items-center shadow-lg fixed w-full top-0 z-50">
+            <h1 class="text-2xl font-bold cursor-pointer" onclick="window.location.reload()">Grocery Store</h1>
+            <nav class="space-x-6 flex items-center">
+                <a href="home.html" class="hover:text-yellow-500">Home</a>
+                <a href="cart.html" class="hover:text-yellow-500 flex items-center">
+                    <i class="ph ph-shopping-cart text-xl"></i> Cart (<span id="cart-count">0</span>)
+                </a>
+                <a href="profile.html" class="hover:text-yellow-500 flex items-center">
+                    <i class="ph ph-user text-xl"></i> <span id="username">My Profile</span>
+                </a>
+                <a href="#" class="hover:text-yellow-500" onclick="logout()">Logout</a>
+            </nav>
+        </header>
+
+        <!-- Product List -->
+        <div id="products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-16">
+            <!-- Dummy Product Data -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-green-900 text-yellow-300 text-center p-4 mt-auto">
+            &copy; 2025 Grocery Store. All rights reserved.
+        </footer>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center modal">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+            <h3 class="text-xl font-bold mb-4" id="modalTitle"></h3>
+            <input type="text" id="productName" placeholder="Product Name" class="w-full p-2 border rounded mb-4">
+            <input type="number" id="productPrice" placeholder="Price" class="w-full p-2 border rounded mb-4">
+            <textarea id="productDescription" placeholder="Description" class="w-full p-2 border rounded mb-4"></textarea>
+            <button class="bg-green-600 text-white px-4 py-2 rounded" onclick="handleProductAction()">Submit</button>
+            <button class="bg-red-600 text-white px-4 py-2 rounded mt-2" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "Apple", price: 30, description: "Fresh red apples.", image: "img/apple.jpg" },
+            { id: 2, name: "Banana", price: 10, description: "Organic bananas.", image: "img/banana.jpg" },
+            { id: 3, name: "Carrot", price: 20, description: "Crunchy carrots.", image: "img/carrot.jpg" }
+        ];
+
+        const productContainer = document.getElementById("products");
+
+        function renderProducts() {
+            productContainer.innerHTML = products.map(product => `
+                <div class="product-card" onclick="selectProduct(${product.id})">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-cover rounded">
+                    <h3 class="text-lg font-bold">${product.name}</h3>
+                    <p class="text-sm">ID: ${product.id}</p>
+                    <p class="text-green-600">₹${product.price}</p>
+                    <p class="text-sm">${product.description}</p>
+                </div>
+            `).join('');
+        }
+
+        let selectedProductId = null;
+        let selectedOperation = "";
+
+        function selectProduct(id) {
+            selectedProductId = id;
+            openModal();
+        }
+
+        function setOperation(operation) {
+            selectedOperation = operation;
+        }
+
+        function openModal() {
+            document.getElementById("productModal").classList.add("active");
+
+            const selectedProduct = products.find(p => p.id === selectedProductId);
+            document.getElementById("modalTitle").textContent = `${selectedOperation.toUpperCase()} Product`;
+            document.getElementById("productName").value = selectedProduct ? selectedProduct.name : "";
+            document.getElementById("productPrice").value = selectedProduct ? selectedProduct.price : "";
+            document.getElementById("productDescription").value = selectedProduct ? selectedProduct.description : "";
+        }
+
+        function closeModal() {
+            document.getElementById("productModal").classList.remove("active");
+        }
+
+        function handleProductAction() {
+            const productName = document.getElementById("productName").value.trim();
+            const productPrice = parseFloat(document.getElementById("productPrice").value.trim());
+            const productDescription = document.getElementById("productDescription").value.trim();
+
+            if (!productName || isNaN(productPrice)) {
+                alert("Please provide valid product details.");
+                return;
+            }
+
+            if (selectedOperation === "add") {
+                products.push({ id: products.length + 1, name: productName, price: productPrice, description: productDescription, image: "img/new.jpg" });
+            } else if (selectedOperation === "update") {
+                const product = products.find(p => p.id === selectedProductId);
+                if (product) {
+                    product.name = productName;
+                    product.price = productPrice;
+                    product.description = productDescription;
+                }
+            } else if (selectedOperation === "remove") {
+                const index = products.findIndex(p => p.id === selectedProductId);
+                if (index !== -1) products.splice(index, 1);
+            }
+
+            renderProducts();
+            closeModal();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
