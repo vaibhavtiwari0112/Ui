@@ -1,4 +1,3 @@
-<!-- Updated Register Page with Unique Leaf Borders & Hi Icon in Modal -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,23 +15,24 @@
             background-size: cover;
             background-color: seashell;
         }
-        .card{
+        .card {
             background-color: seashell;
         }
     </style>
 </head>
 <body class="mainPage flex ml-16 items-center h-screen relative">
-    <div class="absolute bg-yellow-500 rounded-full p-4 top-16 right-16 font-bold text-4xl">Grocery <span class="font-bold text-4xl text-green-700">Store</span></div>
-    <div class="flex card p-8 rounded shadow-md w-3/4 max-w-4xl relative">
+    <div class="absolute bg-yellow-500 rounded-full p-4 top-16 right-16 font-bold text-4xl">
+        Grocery <span class="font-bold text-4xl text-green-700">Store</span>
+    </div>
 
+    <div class="flex card p-8 rounded shadow-md w-3/4 max-w-4xl relative">
         <div class="w-1/2 flex justify-center items-center">
-            <div id="lottie-animation" class="w-[20rem] h-full">
-                <!-- <dotlottie-player src="https://lottie.host/a1a80ba7-2368-4128-89a1-4bfc91480df4/17b9rn0yoT.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player> -->
-            </div>
+            <div id="lottie-animation" class="w-[20rem] h-full"></div>
         </div>
+
         <div class="w-1/2">
             <h2 class="text-2xl font-bold text-center text-green-700">Register</h2>
-            <form id="registerForm">
+            <form id="registerForm" action="/registerServlet" method="POST">
                 <label class="block mt-4">Customer Name</label>
                 <input type="text" id="name" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
                 <p id="nameError" class="text-red-500 text-sm"></p>
@@ -56,7 +56,9 @@
                 <input type="text" id="contact" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400">
                 <p id="contactError" class="text-red-500 text-sm"></p>
 
-                <button type="submit" class="mt-4 bg-green-600 text-white w-full py-2 rounded hover:bg-green-700">Register</button>
+                <button type="button" id="registerButton" class="mt-4 bg-green-600 text-white w-full py-2 rounded hover:bg-green-700">
+                    Register
+                </button>
             </form>
         </div>
     </div>
@@ -65,27 +67,30 @@
     <div id="registerModal" class="hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 transition-opacity">
         <div class="bg-green-100 p-6 rounded-lg shadow-xl w-96 text-center border-4 border-green-600">
             <div class="flex justify-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2720/2720641.png" alt="Hi Icon" class="w-16 h-16">
+                <dotlottie-player src="https://lottie.host/a1a80ba7-2368-4128-89a1-4bfc91480df4/17b9rn0yoT.lottie"
+                    background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay>
+                </dotlottie-player>
             </div>
             <h3 class="text-2xl font-semibold mt-2 text-green-700">Welcome to Grocery Store!</h3>
-            <p class="text-green-600 text-lg">Registration Successful, <span id="userNameDisplay" class="font-bold"></span>!</p>
-            <button id="continueButton" class="mt-4 bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600">Continue</button>
+            <p class="text-green-600 text-lg">
+                Registration Successful, <span id="userNameDisplay" class="font-bold"></span>!
+            </p>
+            <button id="continueButton" class="mt-4 bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600">
+                Continue
+            </button>
         </div>
     </div>
-</body>
-</html>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const registerForm = document.getElementById("registerForm");
             const registerModal = document.getElementById("registerModal");
             const userNameDisplay = document.getElementById("userNameDisplay");
             const continueButton = document.getElementById("continueButton");
             const passwordInput = document.getElementById("password");
             const togglePassword = document.getElementById("togglePassword");
 
-          // Lottie Animation Setup
-          lottie.loadAnimation({
+            // Lottie Animation Setup
+            lottie.loadAnimation({
                 container: document.getElementById('lottie-animation'),
                 renderer: 'svg',
                 loop: true,
@@ -93,15 +98,9 @@
                 path: 'https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json'
             });
 
-            
             togglePassword.addEventListener("click", () => {
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
-                    togglePassword.innerHTML = "&#128064;"; // Open eye
-                } else {
-                    passwordInput.type = "password";
-                    togglePassword.innerHTML = "&#128065;"; // Crossed eye
-                }
+                passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+                togglePassword.innerHTML = passwordInput.type === "password" ? "&#128065;" : "&#128064;";
             });
 
             function showError(inputId, message) {
@@ -135,38 +134,10 @@
                 return isValid;
             }
 
-            document.getElementById("name").addEventListener("input", () => validateField("name", (val) => val.length >= 3, "Name must be at least 3 characters."));
-            document.getElementById("email").addEventListener("input", () => validateField("email", (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), "Invalid email format."));
-            document.getElementById("password").addEventListener("input", () => validateField("password", (val) => val.length >= 6, "Password must be at least 6 characters."));
-            document.getElementById("address").addEventListener("input", () => validateField("address", (val) => val.length > 0, "Address cannot be empty."));
-            document.getElementById("contact").addEventListener("input", () => validateField("contact", (val) => /^\d{10}$/.test(val), "Contact number must be 10 digits."));
-
-            registerForm.addEventListener("submit", function (e) {
-                e.preventDefault();
-                if (!validateForm()) return;
-
-                const users = JSON.parse(localStorage.getItem("users")) || [];
-                const email = document.getElementById("email").value.trim();
-                if (users.some(user => user.email === email)) {
-                    showError("email", "Email already exists.");
-                    return;
+            document.getElementById("registerButton").addEventListener("click", function () {
+                if (validateForm()) {
+                    document.getElementById("registerForm").submit();
                 }
-
-                const newUser = {
-                    name: document.getElementById("name").value.trim(),
-                    email,
-                    password: passwordInput.value.trim(),
-                    address: document.getElementById("address").value.trim(),
-                    contact: document.getElementById("contact").value.trim()
-                };
-
-                users.push(newUser);
-                localStorage.setItem("users", JSON.stringify(users));
-
-                userNameDisplay.textContent = newUser.name;
-                registerModal.classList.remove("hidden");
-
-                setTimeout(() => window.location.href = "home.html", 5000);
             });
 
             continueButton.addEventListener("click", () => window.location.href = "home.html");
@@ -174,5 +145,3 @@
     </script>
 </body>
 </html>
-
-https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2
